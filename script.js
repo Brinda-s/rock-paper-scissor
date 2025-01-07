@@ -1,69 +1,68 @@
-function getComputerChoice(string){
-    const randomNumber = Math.random(); // Generates a number b/w 0 and 1
-
-    if(randomNumber < 1/3){
-        return "rock";
-    } else if( randomNumber < 2/3){
-        return "paper";
-    }
-    else{
-        return "scissors";
-    }
-
-}
-
-console.log(getComputerChoice());
-console.log(getComputerChoice());
-console.log(getComputerChoice());
-
-function getHumanChoice(){
-
-    //ask User to enter any value
-    let choice = prompt("Enter your choice(rock,paper or scissors):").toLowerCase();
-    if(choice=="rock"||choice=="scissors"||choice=="paper"){
-        return choice;
-    }
-    else{
-        console.log("Invalid input,Please enter rock,paper or scissors.");
-        return getHumanChoice();
-    }
-
-}
-
-console.log(getHumanChoice());
-
 let humanScore = 0;
 let computerScore = 0;
+let roundsPlayed = 0; // Counter to track rounds
 
-// Test by logging the initial values
-console.log("Initial Human Score:", humanScore);
-console.log("Initial Computer Score:", computerScore);
-
-function playRound(humanChoice, computerChoice){
-    humanChoice = humanChoice.toLowerCase();
-
-    console.log(`Human choice: ${humanChoice}`);
-    console.log(`Computer choice: ${computerChoice}`);
-
-    if(humanChoice==computerChoice){
-        comsole.log("It's a tie!");
-    }else if(
-        (humanChoice==="rock"&&computerChoice==="scissors")||
-        (humanChoice==="paper"&&computerChoice==="rock")||
-        (humanChoice==="scissors"&&computerChoice=="paper")
-    ){
-        console.log(`You win! ${humanChoice} beats ${computerChoice}`);
-        humanScore++;
-    }
-    else{
-        console.log(`You lose! ${computerChoice} beats ${humanChoice}`);
-        computerChoice++;
-    }
-
-    console.log(`Current Scores - Human: ${humanScore}, Computer: ${computerScore}`);
+function getComputerChoice() {
+    const choices = ["rock", "paper", "scissors"];
+    const randomIndex = Math.floor(Math.random() * 3);
+    return choices[randomIndex];
 }
 
-const humanSelection = getHumanChoice();
-const computerSelection = getComputerChoice();
+function playRound(humanChoice) {
+    const computerChoice = getComputerChoice();
+    const roundInfo = document.getElementById("round-info");
 
-playRound(humanSelection,computerSelection);
+    if (humanChoice === computerChoice) {
+        roundInfo.textContent = `It's a tie! You both chose ${humanChoice}.`;
+    } else if (
+        (humanChoice === "rock" && computerChoice === "scissors") ||
+        (humanChoice === "paper" && computerChoice === "rock") ||
+        (humanChoice === "scissors" && computerChoice === "paper")
+    ) {
+        humanScore++;
+        roundInfo.textContent = `You win! ${humanChoice} beats ${computerChoice}.`;
+    } else {
+        computerScore++;
+        roundInfo.textContent = `You lose! ${computerChoice} beats ${humanChoice}.`;
+    }
+
+    // Update the scoreboard
+    const scoreboard = document.getElementById("scoreboard");
+    scoreboard.textContent = `Human: ${humanScore} | Computer: ${computerScore}`;
+
+    // Increment the rounds played
+    roundsPlayed++;
+
+    // Check if 5 rounds are completed
+    if (roundsPlayed >= 5) {
+        endGame();
+    }
+}
+
+function startGame(humanChoice) {
+    if (roundsPlayed < 5) {
+        playRound(humanChoice);
+    }
+}
+
+function endGame() {
+    const roundInfo = document.getElementById("round-info");
+    const finalMessage = document.createElement("p");
+
+    // Determine the overall winner
+    if (humanScore > computerScore) {
+        finalMessage.textContent = "Game Over! Congratulations, you won the game!";
+    } else if (humanScore < computerScore) {
+        finalMessage.textContent = "Game Over! The computer won the game. Better luck next time!";
+    } else {
+        finalMessage.textContent = "Game Over! It's a tie overall.";
+    }
+
+    // Disable the buttons
+    document.querySelectorAll("button").forEach((button) => {
+        button.disabled = true;
+    });
+
+    // Append the final message
+    roundInfo.appendChild(finalMessage);
+}
